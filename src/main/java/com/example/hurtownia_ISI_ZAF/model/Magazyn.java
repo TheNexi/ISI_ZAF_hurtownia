@@ -13,12 +13,23 @@ import lombok.Setter;
 public class Magazyn {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "magazyn_seq")
+    @SequenceGenerator(name = "magazyn_seq", sequenceName = "magazyn_seq", allocationSize = 1)
     @Column(name = "id_magazyn")
     private Integer id;
 
+    @Column(name = "nazwa")
     private String nazwa;
+
+    @Column(name = "kraj")
     private String kraj;
+
+    @Column(name = "miasto")
     private String miasto;
+
+    @Column(name = "ulica")
     private String ulica;
+
+    @Column(name = "pojemnosc")
     private Integer pojemnosc;
 }

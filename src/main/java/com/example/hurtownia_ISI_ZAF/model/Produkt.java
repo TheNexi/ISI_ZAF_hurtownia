@@ -13,14 +13,20 @@ import lombok.Setter;
 public class Produkt {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "produkt_seq")
+    @SequenceGenerator(name = "produkt_seq", sequenceName = "produkt_seq", allocationSize = 1)
     @Column(name = "id_produkt")
     private Integer id;
 
+    @Column(name = "nazwa")
     private String nazwa;
+
+    @Column(name = "kategoria")
     private String kategoria;
 
     @Column(name = "jednostka_miary")
     private String jednostkaMiary;
 
+    @Column(name = "cena")
     private Double cena;
 }
