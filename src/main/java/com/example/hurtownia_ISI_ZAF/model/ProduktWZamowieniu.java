@@ -13,6 +13,8 @@ import lombok.Setter;
 public class ProduktWZamowieniu {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "produkt_w_zamowieniu_seq")
+    @SequenceGenerator(name = "produkt_w_zamowieniu_seq", sequenceName = "produkt_w_zamowieniu_seq", allocationSize = 1)
     @Column(name = "id_pozycja")
     private Integer id;
 
@@ -24,8 +26,13 @@ public class ProduktWZamowieniu {
     @JoinColumn(name = "id_produkt")
     private Produkt produkt;
 
+    @JoinColumn(name = "ilosc")
     private Integer ilosc;
+
+    @JoinColumn(name = "cena")
     private Double cena;
+
+    @JoinColumn(name = "rabat")
     private Double rabat;
 
     @Column(name = "wartosc_laczna")

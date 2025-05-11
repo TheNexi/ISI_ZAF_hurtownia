@@ -13,6 +13,8 @@ import lombok.Setter;
 public class Zamowienie {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "zamowienie_seq")
+    @SequenceGenerator(name = "zamowienie_seq", sequenceName = "zamowienie_seq", allocationSize = 1)
     @Column(name = "id_zamowienie")
     private Integer id;
 
