@@ -30,7 +30,6 @@ public class JwtTokenController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        System.out.println("Wszystko jest OK, metoda login została wywołana!");
         Optional<Uzytkownicy> optionalUser = userRepository.findByLogin(loginRequest.getUsername());
         if (optionalUser.isPresent()) {
             Uzytkownicy user = optionalUser.get();
