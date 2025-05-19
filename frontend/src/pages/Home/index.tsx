@@ -1,8 +1,22 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../../auth/AuthContext'
 
-import { JSX } from 'react'
-const Home: () => JSX.Element = () => {
-  return <h1>Dashboard</h1>
+const Home = () => {
+  const { logout } = useContext(AuthContext)
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <button onClick={handleLogout}>Wyloguj się</button>
+    </div>
+  )
 }
 
 export default Home

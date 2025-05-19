@@ -1,9 +1,11 @@
 package com.example.hurtownia_ISI_ZAF.config;
 
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collections;
 
 public class JwtAuthentication extends AbstractAuthenticationToken {
 
@@ -27,6 +29,6 @@ public class JwtAuthentication extends AbstractAuthenticationToken {
 
     @Override
     public UserDetails getDetails() {
-        return new User(username, "", null);  // Można rozszerzyć o role
+        return new User(username, "", Collections.singletonList(new SimpleGrantedAuthority("USER")));
     }
 }

@@ -1,15 +1,15 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react'
-import Cookies from 'js-cookie'
+import axios from 'axios'
 
 type AuthContextType = {
   isAuthenticated: boolean
-  login: (token: string) => void
+  setAuthenticated: (value: boolean) => void
   logout: () => void
 }
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
-  login: () => {},
+  setAuthenticated: () => {},
   logout: () => {},
 })
 
@@ -17,22 +17,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    const token = Cookies.get('accessToken')
-    if (token) setIsAuthenticated(true)
-  }, [])
+  axios
+    .get('http://localhost:8080/auth/me', { withCredentials: true })
+    .then(() => {
+      //console.log('Ustawiam isAuthenticated na true');
+      setIsAuthenticated(true);
+    })
+    .catch(() => {
+      //console.log('Ustawiam isAuthenticated na false');
+      setIsAuthenticated(false);
+    });
+}, []);
 
-  const login = (token: string) => {
-    Cookies.set('accessToken', token)
-    setIsAuthenticated(true)
-  }
+//console.log('Aktualny isAuthenticated:', isAuthenticated);
+
 
   const logout = () => {
-    Cookies.remove('accessToken')
-    setIsAuthenticated(false)
+    axios
+      .post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
+      .finally(() => setIsAuthenticated(false))
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        setAuthenticated: setIsAuthenticated,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )
