@@ -58,8 +58,7 @@ public class AuthController {
         Uzytkownicy user = userService.registerUser(
                 registerRequest.getUsername(),
                 registerRequest.getPassword(),
-                registerRequest.getEmail(),
-                registerRequest.getRole()
+                registerRequest.getEmail()
         );
         return ResponseEntity.status(201).body(user);
     }

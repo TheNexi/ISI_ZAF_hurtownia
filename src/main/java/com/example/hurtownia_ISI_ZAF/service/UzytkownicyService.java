@@ -33,7 +33,7 @@ public class UzytkownicyService implements UserDetailsService {
                 .build();
     }
 
-    public Uzytkownicy registerUser(String username, String password, String email, String role) {
+    public Uzytkownicy registerUser(String username, String password, String email) {
         if (uzytkownicyRepository.findByLogin(username).isPresent()) {
             throw new RuntimeException("Użytkownik o tej nazwie już istnieje");
         }
@@ -46,7 +46,7 @@ public class UzytkownicyService implements UserDetailsService {
         user.setLogin(username);
         user.setHaslo(passwordEncoder.encode(password));  // Szyfrowanie hasła
         user.setEmail(email);
-        user.setRole(role);
+        user.setRole("USER");
 
         return uzytkownicyRepository.save(user);
     }
