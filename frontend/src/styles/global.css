@@ -1,0 +1,98 @@
+:root {
+  --green-main: #65C18C;
+  --green-light: #C1F4C5;
+  --pink-light: #FFBED8;
+  --pink-main: #FF7BA9;
+
+  --text-color: #333;
+  --text-muted: #555;
+  --bg-main: #f5f7fa;
+  --bg-white: #ffffff;
+  --btn-primary: var(--green-main);
+  --btn-primary-hover: #4ba873;
+  --btn-secondary: #e5e7eb;
+  --btn-secondary-hover: #d1d5db;
+  --divider: #ccc;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-color);
+  height: 100%;
+}
+
+form {
+  max-width: 400px;
+  margin: 100px auto;
+  background-color: var(--bg-white);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+form h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  color: #1a202c;
+}
+
+form input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+form button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: var(--btn-primary);
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+form button[type="button"] {
+  background-color: var(--btn-secondary);
+  color: #111827;
+}
+
+form button[type="button"]:hover {
+  background-color: var(--btn-secondary-hover);
+}
+
+.form-extra {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.form-info {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--divider);
+  margin: 1.5rem 0;
+  border: none;
+}

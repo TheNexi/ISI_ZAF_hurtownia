@@ -5,6 +5,7 @@ import Register from './pages/Register'
 import Home from './pages/Home'
 import { AuthProvider } from './auth/AuthContext'
 import PrivateRoute from './auth/PrivateRoute'
+import './styles/global.css'
 
 const App = () => {
   return (
