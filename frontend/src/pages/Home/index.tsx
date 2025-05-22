@@ -1,21 +1,15 @@
-import React, { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { AuthContext } from '../../auth/AuthContext'
+import React from 'react'
+import DashboardTabs from '../../components/DashboardTabs'
 
 const Home = () => {
-  const { logout } = useContext(AuthContext)
-  const navigate = useNavigate()
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
-
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <button onClick={handleLogout}>Wyloguj się</button>
+  <div className="container">
+    <DashboardTabs /> 
+    <div className="page-content">
+      <h1>Zawartość strony głównej</h1>
     </div>
+  </div>
+
   )
 }
 
