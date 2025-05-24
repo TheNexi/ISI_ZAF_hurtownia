@@ -5,6 +5,8 @@ import com.example.hurtownia_ISI_ZAF.repository.UzytkownicyRepository;
 import com.example.hurtownia_ISI_ZAF.request.LoginRequest;
 import com.example.hurtownia_ISI_ZAF.response.JwtTokenResponse;
 import com.example.hurtownia_ISI_ZAF.service.JwtTokenService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,18 +31,26 @@ public class JwtTokenController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         Optional<Uzytkownicy> optionalUser = userRepository.findByLogin(loginRequest.getUsername());
         if (optionalUser.isPresent()) {
             Uzytkownicy user = optionalUser.get();
             if (passwordMatches(loginRequest.getPassword(), user.getHaslo())) {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), loginRequest.getPassword());
                 String token = jwtTokenService.generateToken(authentication);
+
+                Cookie cookie = new Cookie("jwt", token);
+                cookie.setHttpOnly(true);
+                cookie.setPath("/");
+                cookie.setMaxAge(1800);
+                response.addCookie(cookie);
+
                 return ResponseEntity.ok(new JwtTokenResponse(token));
             }
         }
         return ResponseEntity.status(401).body("Błędne dane logowania");
     }
+
 
     private boolean passwordMatches(String inputPassword, String storedPassword) {
         return passwordEncoder.matches(inputPassword, storedPassword);
