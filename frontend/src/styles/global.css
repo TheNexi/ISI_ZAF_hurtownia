@@ -13,6 +13,8 @@
   --btn-secondary: #e5e7eb;
   --btn-secondary-hover: #d1d5db;
   --divider: #ccc;
+  --error: #e53e3e;        
+  --error-hover: #c53030; 
 }
 
 * {
@@ -97,10 +99,6 @@ form button[type="button"]:hover {
   border: none;
 }
 
-
-
-
-
 .btn {
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
@@ -114,7 +112,7 @@ form button[type="button"]:hover {
   width: 100%;
   padding: 0.75rem;
   background-color: var(--btn-primary);
-  color: white;
+  color: var(--bg-white);
   border: none; 
 }
 
@@ -126,14 +124,12 @@ form button[type="button"]:hover {
   width: auto;
   padding: 0.5rem 1rem;
   background-color: var(--pink-main);
-  color: white;
+  color: var(--bg-white);
 }
 
 .btn-logout:hover {
-  background-color: #e26096;
+  background-color: var(--pink-main);
 }
-
-
 
 .container {
   padding: 2rem;
@@ -153,7 +149,6 @@ form button[type="button"]:hover {
   gap: 1rem;   
 }
 
-
 .tab {
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -169,7 +164,7 @@ form button[type="button"]:hover {
 
 .tab.active {
   background-color: var(--btn-primary);
-  color: white;
+  color: var(--bg-white);
 }
 
 .page-content {
@@ -177,4 +172,36 @@ form button[type="button"]:hover {
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.search-wrapper {
+  margin-top: 2rem;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+
+.search-input {
+  flex-grow: 1;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.search-btn {
+  width: auto;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.error-message {
+  color: var(--error);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
 }

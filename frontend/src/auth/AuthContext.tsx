@@ -17,25 +17,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-  axios
-    .get('http://localhost:8080/auth/me', { withCredentials: true })
-    .then(() => {
-      //console.log('Ustawiam isAuthenticated na true');
-      setIsAuthenticated(true);
-    })
-    .catch(() => {
-      //console.log('Ustawiam isAuthenticated na false');
-      setIsAuthenticated(false);
-    });
-}, []);
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token')
 
-//console.log('Aktualny isAuthenticated:', isAuthenticated);
+      try {
+        if (token) {
+          await axios.get('http://localhost:8080/auth/me', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+        } else {
+          await axios.get('http://localhost:8080/auth/me', { withCredentials: true })
+        }
+        setIsAuthenticated(true)
+      } catch {
+        setIsAuthenticated(false)
+      }
+    }
 
+    checkAuth()
+  }, [])
 
-  const logout = () => {
-    axios
-      .post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
-      .finally(() => setIsAuthenticated(false))
+  const logout = async () => {
+    localStorage.removeItem('token') 
+
+    try {
+      await axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
+    } catch (error) {
+      console.error('Błąd podczas wylogowywania', error)
+    } finally {
+      setIsAuthenticated(false)
+    }
   }
 
   return (

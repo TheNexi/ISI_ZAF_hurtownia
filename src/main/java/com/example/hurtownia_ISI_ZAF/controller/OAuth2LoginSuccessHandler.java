@@ -8,7 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.io.IOException;
 
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
@@ -24,6 +25,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
 
         String jwtToken = jwtTokenService.generateToken(authentication);
+        String encodedToken = URLEncoder.encode(jwtToken, StandardCharsets.UTF_8);
         Cookie cookie = new Cookie("jwt", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
@@ -31,7 +33,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         cookie.setMaxAge(1800);
         response.addCookie(cookie);
 
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("http://localhost:3000/login/success?token=" + encodedToken);
     }
 }
 
