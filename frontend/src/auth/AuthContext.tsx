@@ -28,42 +28,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserType | null>(null)
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('token')
-
-      try {
-        const res = token
-          ? await axios.get('http://localhost:8080/auth/me', {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-          : await axios.get('http://localhost:8080/auth/me', {
-              withCredentials: true,
-            })
-
+    axios
+      .get('http://localhost:8080/auth/me', { withCredentials: true })
+      .then((res) => {
         setIsAuthenticated(true)
-        setUser(res.data)
-      } catch {
+        setUser(res.data) 
+      })
+      .catch(() => {
         setIsAuthenticated(false)
         setUser(null)
-      }
-    }
-
-    checkAuth()
+      })
   }, [])
 
-  const logout = async () => {
+  const logout = () => {
     localStorage.removeItem('token')
-
-    try {
-      await axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
-    } catch (error) {
-      console.error('Błąd podczas wylogowywania', error)
-    } finally {
-      setIsAuthenticated(false)
-      setUser(null)
-    }
+    axios
+      .post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
+      .finally(() => {
+        setIsAuthenticated(false)
+        setUser(null)
+      })
   }
 
   return (

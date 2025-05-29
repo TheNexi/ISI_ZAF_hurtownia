@@ -9,77 +9,57 @@ const Login = () => {
   const { setAuthenticated, isAuthenticated, setUser } = useContext(AuthContext)
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      setAuthenticated(true)  
-    }
-  }, [setAuthenticated])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await axios.post(
+      await axios.post(
         'http://localhost:8080/api/auth/login',
         { username, password },
         { withCredentials: true }
       )
 
+      const userRes = await axios.get('http://localhost:8080/auth/me', {
+        withCredentials: true,
+      })
 
-      const token = response.data.token
-      if (token) {
-    localStorage.setItem('token', token)
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      const user = userRes.data
+      if (!user || !user.role) {
+        throw new Error('Brak danych użytkownika')
+      }
 
-    const userRes = await axios.get('http://localhost:8080/auth/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+      setUser(user)
+      setAuthenticated(true)
 
-    const user = userRes.data
-    if (!user || !user.role) {
-      throw new Error('Brak danych użytkownika')
+      if (user.role === 'ADMIN') {
+        navigate('/admin')
+      } else {
+        navigate('/')
+      }
+    } catch (err: any) {
+      if (err.response?.data) {
+        alert(err.response.data)
+      } else {
+        alert('Nieprawidłowy login lub hasło')
+      }
     }
-
-    setUser(user)
-    setAuthenticated(true)
-
-    if (user.role === 'ADMIN') {
-      navigate('/admin')
-    } else {
-      navigate('/')
-    }
-  } else {
-    console.warn('Brak tokena w odpowiedzi')
   }
-} catch (err: any) {
-  if (err.response?.data) {
-    alert(err.response.data)
-  } else {
-    alert('Nieprawidłowy login lub hasło')
-  }
-}
 
   useEffect(() => {
-  if (isAuthenticated) {
-    axios
-      .get('http://localhost:8080/auth/me', { withCredentials: true })
-      .then(res => {
-        const user = res.data
-        if (user.role === 'ADMIN') {
-          navigate('/admin')
-        } else {
-          navigate('/')
-        }
-      })
-      .catch(() => {
-        navigate('/')
-      })
-  }
-}, [isAuthenticated, navigate])
-
+    if (isAuthenticated) {
+      axios
+        .get('http://localhost:8080/auth/me', { withCredentials: true })
+        .then(res => {
+          const user = res.data
+          if (user.role === 'ADMIN') {
+            navigate('/admin')
+          } else {
+            navigate('/')
+          }
+        })
+        .catch(() => {
+        })
+    }
+  }, [isAuthenticated, navigate])
 
   const handleGoogleLogin = () => {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google'
