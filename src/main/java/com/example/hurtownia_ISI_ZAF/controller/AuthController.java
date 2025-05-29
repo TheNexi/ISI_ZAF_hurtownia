@@ -18,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -46,6 +48,7 @@ public class AuthController {
 
         Cookie cookie = new Cookie("jwt", token);
         cookie.setHttpOnly(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(1800);
         response.addCookie(cookie);
@@ -79,7 +82,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
 
-        String email = jwtTokenService.getUsernameFromToken(token);
+        String email = jwtTokenService.getEmailFromToken(token);
+        String login = jwtTokenService.getLoginFromToken(token);
+        String role = jwtTokenService.getRoleFromToken(token);
+
         if (email == null || email.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
@@ -89,7 +95,13 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
-        return ResponseEntity.ok(userOpt.get());
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("login", userOpt.get().getLogin());
+        responseMap.put("email", userOpt.get().getEmail());
+        responseMap.put("role", role);
+
+        return ResponseEntity.ok(responseMap);
+
     }
 
 

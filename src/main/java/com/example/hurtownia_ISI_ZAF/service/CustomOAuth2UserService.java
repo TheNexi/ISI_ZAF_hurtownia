@@ -36,8 +36,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
         String email = oAuth2User.getAttribute("email");
-        String name = oAuth2User.getAttribute("name");
-
+        String login = oAuth2User.getAttribute("name");
 
         Uzytkownicy user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
@@ -45,15 +44,22 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     newUser.setEmail(email);
                     String randomPassword = generateRandomPassword();
                     newUser.setHaslo(passwordEncoder.encode(randomPassword));
-                    newUser.setLogin(name);
+                    newUser.setLogin(login);
+                    newUser.setRole("USER");
                     return userRepository.save(newUser);
                 });
 
+        String role = "ROLE_USER";
+        if (user.getRole() != null) {
+            role = "ROLE_" + user.getRole();
+        }
+
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                Collections.singleton(new SimpleGrantedAuthority(role)),
                 oAuth2User.getAttributes(),
                 "email"
         );
+
     }
 
     private String generateRandomPassword() {

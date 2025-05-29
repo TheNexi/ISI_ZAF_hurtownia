@@ -6,7 +6,7 @@ import axios from 'axios'
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const { setAuthenticated, isAuthenticated } = useContext(AuthContext)
+  const { setAuthenticated, isAuthenticated, setUser } = useContext(AuthContext)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -26,25 +26,60 @@ const Login = () => {
         { withCredentials: true }
       )
 
+
       const token = response.data.token
       if (token) {
-        localStorage.setItem('token', token)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        setAuthenticated(true)
-        navigate('/')
-      } else {
-        console.warn('Brak tokena w odpowiedzi')
-      }
-    } catch {
-      alert('Nieprawidłowy login lub hasło')
-    }
-  }
+    localStorage.setItem('token', token)
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
-  useEffect(() => {
-    if (isAuthenticated) {
+    const userRes = await axios.get('http://localhost:8080/auth/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const user = userRes.data
+    if (!user || !user.role) {
+      throw new Error('Brak danych użytkownika')
+    }
+
+    setUser(user)
+    setAuthenticated(true)
+
+    if (user.role === 'ADMIN') {
+      navigate('/admin')
+    } else {
       navigate('/')
     }
-  }, [isAuthenticated, navigate])
+  } else {
+    console.warn('Brak tokena w odpowiedzi')
+  }
+} catch (err: any) {
+  if (err.response?.data) {
+    alert(err.response.data)
+  } else {
+    alert('Nieprawidłowy login lub hasło')
+  }
+}
+
+  useEffect(() => {
+  if (isAuthenticated) {
+    axios
+      .get('http://localhost:8080/auth/me', { withCredentials: true })
+      .then(res => {
+        const user = res.data
+        if (user.role === 'ADMIN') {
+          navigate('/admin')
+        } else {
+          navigate('/')
+        }
+      })
+      .catch(() => {
+        navigate('/')
+      })
+  }
+}, [isAuthenticated, navigate])
+
 
   const handleGoogleLogin = () => {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google'

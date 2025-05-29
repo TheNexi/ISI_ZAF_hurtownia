@@ -1,38 +1,52 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react'
 import axios from 'axios'
 
+type UserType = {
+  login: string
+  email: string
+  role: string
+}
+
 type AuthContextType = {
   isAuthenticated: boolean
   setAuthenticated: (value: boolean) => void
+  user: UserType | null
+  setUser: (user: UserType | null) => void
   logout: () => void
 }
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   setAuthenticated: () => {},
+  user: null,
+  setUser: () => {},
   logout: () => {},
 })
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState<UserType | null>(null)
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token')
 
       try {
-        if (token) {
-          await axios.get('http://localhost:8080/auth/me', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-        } else {
-          await axios.get('http://localhost:8080/auth/me', { withCredentials: true })
-        }
+        const res = token
+          ? await axios.get('http://localhost:8080/auth/me', {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+          : await axios.get('http://localhost:8080/auth/me', {
+              withCredentials: true,
+            })
+
         setIsAuthenticated(true)
+        setUser(res.data)
       } catch {
         setIsAuthenticated(false)
+        setUser(null)
       }
     }
 
@@ -40,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   const logout = async () => {
-    localStorage.removeItem('token') 
+    localStorage.removeItem('token')
 
     try {
       await axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
@@ -48,6 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error('Błąd podczas wylogowywania', error)
     } finally {
       setIsAuthenticated(false)
+      setUser(null)
     }
   }
 
@@ -56,6 +71,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         isAuthenticated,
         setAuthenticated: setIsAuthenticated,
+        user,
+        setUser,
         logout,
       }}
     >

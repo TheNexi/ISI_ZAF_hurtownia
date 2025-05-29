@@ -22,10 +22,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-
+        
         String jwt = extractJwtFromRequest(request);
+
         if (jwt != null && jwtTokenService.validateToken(jwt)) {
-            String username = jwtTokenService.getUsernameFromToken(jwt);
+            String username = jwtTokenService.getLoginFromToken(jwt);
 
             JwtAuthentication authentication = new JwtAuthentication(username);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

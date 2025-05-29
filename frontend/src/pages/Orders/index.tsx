@@ -4,7 +4,7 @@ import DashboardTabs from '../../components/DashboardTabs'
 const Orders = () => {
   return (
   <div className="container">
-    <DashboardTabs /> 
+    <DashboardTabs role="USER"/> 
     <div className="page-content">
       <h1>Zawartość strony Zamówienia</h1>
     </div>

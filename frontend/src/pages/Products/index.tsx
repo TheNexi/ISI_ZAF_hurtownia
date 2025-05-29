@@ -55,7 +55,7 @@ const Products = () => {
 
   return (
     <div className="container">
-      <DashboardTabs />
+      <DashboardTabs role="USER"/>
       <div className="page-content">
         <h1>Lista Produktów</h1>
 
@@ -74,6 +74,7 @@ const Products = () => {
             Wyczyść
           </button>
         </div>
+
 
         {error && <p className="error-message">{error}</p>}
 
