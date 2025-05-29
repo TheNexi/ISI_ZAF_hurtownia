@@ -9,7 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -26,12 +27,14 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
 
         String jwtToken = jwtTokenService.generateToken(authentication);
+        String encodedToken = URLEncoder.encode(jwtToken, StandardCharsets.UTF_8);
         Cookie cookie = new Cookie("jwt", jwtToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(1800);
         response.addCookie(cookie);
+
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         String redirectUrl = "http://localhost:3000/";
