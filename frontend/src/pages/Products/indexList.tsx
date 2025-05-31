@@ -14,8 +14,7 @@ const ProductList: React.FC<ProductListProps> = ({ products }) => {
       title: 'Kategoria',
       dataIndex: 'kategoria',
       key: 'kategoria',
-      render: (kategoria: { nazwa: string } | null) =>
-        kategoria ? kategoria.nazwa : 'Brak kategorii',
+      render: (kategoria: string | null) => kategoria || 'Brak kategorii',
     },
     { title: 'Jednostka Miary', dataIndex: 'jednostkaMiary', key: 'jednostkaMiary' },
     {
@@ -28,7 +27,7 @@ const ProductList: React.FC<ProductListProps> = ({ products }) => {
 
   
   return (
-    <div className="page-content">
+    <div className="table-responsive">
       <Table
         dataSource={products}
         columns={columns}

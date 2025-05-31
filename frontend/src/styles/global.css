@@ -1,8 +1,8 @@
 :root {
   --green-main: #65C18C;
   --green-light: #C1F4C5;
-  --pink-light: #FFBED8;
-  --pink-main: #FF7BA9;
+  --pink-light: #FF7BA9;
+  --pink-main: #e14c80;
 
   --text-color: #333;
   --text-muted: #555;
@@ -12,9 +12,13 @@
   --btn-primary-hover: #4ba873;
   --btn-secondary: #e5e7eb;
   --btn-secondary-hover: #d1d5db;
-  --divider: #ccc;
+  --light-grey: #ccc;
   --error: #e53e3e;        
   --error-hover: #c53030; 
+  --dark-navy: #1a202c;
+  --input-border-hover: #dbdbdb;
+  --black: #000000;
+  --text-button-secondary: #111827;
 }
 
 * {
@@ -43,14 +47,14 @@ form h2 {
   text-align: center;
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
-  color: #1a202c;
+  color: var(--dark-navy);
 }
 
 form input {
   width: 100%;
   padding: 0.75rem;
   margin-bottom: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--light-grey);
   border-radius: 8px;
   font-size: 1rem;
 }
@@ -64,7 +68,7 @@ form button {
   font-size: 1rem;
   cursor: pointer;
   background-color: var(--btn-primary);
-  color: white;
+  color: var(--bg-white);
   transition: background-color 0.3s ease;
 }
 
@@ -74,7 +78,7 @@ form button:hover {
 
 form button[type="button"] {
   background-color: var(--btn-secondary);
-  color: #111827;
+  color: var(--text-button-secondary);
 }
 
 form button[type="button"]:hover {
@@ -94,7 +98,7 @@ form button[type="button"]:hover {
 
 .divider {
   height: 1px;
-  background-color: var(--divider);
+  background-color: var(--light-grey);
   margin: 1.5rem 0;
   border: none;
 }
@@ -120,19 +124,33 @@ form button[type="button"]:hover {
   background-color: var(--btn-primary-hover);
 }
 
-.btn-logout {
+.btn.btn-logout {
   width: auto;
   padding: 0.5rem 1rem;
-  background-color: var(--pink-main);
+  background-color: var(--pink-light);
   color: var(--bg-white);
 }
 
-.btn-logout:hover {
+.btn.btn-logout:hover {
   background-color: var(--pink-main);
 }
 
 .container {
   padding: 2rem;
+}
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;     
+    padding: 1rem 0.75rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .container {
+    max-width: 720px;
+    padding: 1.25rem 1rem;
+  }
 }
 
 .header {
@@ -145,9 +163,17 @@ form button[type="button"]:hover {
 .dashboard-tabs {
   flex-grow: 1;
   display: flex;
-  justify-content: center;
-  gap: 1rem;   
+  justify-content: flex-start;
+  gap: 1rem;
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch; 
+  scrollbar-width: none; 
 }
+
+.dashboard-tabs::-webkit-scrollbar {
+  display: none;
+}
+
 
 .tab {
   padding: 0.5rem 1rem;
@@ -182,12 +208,11 @@ form button[type="button"]:hover {
   align-items: center;
 }
 
-
 .search-input {
   flex-grow: 1;
   padding: 0.75rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--light-grey);
   font-size: 1rem;
   font-family: 'Montserrat', sans-serif;
 }
@@ -199,9 +224,130 @@ form button[type="button"]:hover {
   border-radius: 8px;
 }
 
+@media (max-width: 480px) {
+  .search-wrapper {
+    flex-direction: column;
+  }
+  .search-btn {
+    width: 100%;
+  }
+  .search-input {
+    width: 100%;
+  }
+}
+
 .error-message {
   color: var(--error);
   margin-bottom: 1rem;
   font-weight: 600;
   font-family: 'Montserrat', sans-serif;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; 
+}
+
+.btn-action {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: none;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-edit {
+  background-color: var(--btn-primary);
+  color: var(--bg-white);
+}
+
+.btn-edit:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-delete {
+  background-color: var(--pink-light);
+  color: var(--bg-white);
+}
+
+.btn-delete:hover {
+  background-color: var(--pink-main);
+}
+
+.ant-popconfirm-buttons .btn-action.btn-edit:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+:where(.css-dev-only-do-not-override-1d4w9r2)
+  .ant-popconfirm-buttons > button.btn-action.btn-delete:hover {
+  background-color: var(--pink-main);
+  border-color: var(--pink-main);
+  box-shadow: none;
+  color: var(--bg-white);
+}
+
+.form-wrapper {
+  max-width: 500px;
+}
+
+.form-title {
+  font-size: 1.35rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  color: var(--dark-navy);
+}
+
+.styled-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: var(--text-color);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.styled-form .ant-input:hover,
+.styled-form .ant-input-number:hover {
+  border-color: var(--input-border-hover);
+}
+
+.styled-form .ant-input:focus,
+.styled-form .ant-input-focused,
+.styled-form .ant-input-number:focus,
+.styled-form .ant-input-number-focused {
+  border-color: var(--black);
+  box-shadow: none;
+  border-width: 2px;
+}
+
+:where(.css-dev-only-do-not-override-1d4w9r2).ant-form {
+  max-width: 600px; 
+  width: 100%; 
+  background-color: transparent; 
+  padding: 0; 
+  box-shadow: none;
+  margin: auto; 
+}
+
+.ant-select-item-option:hover,
+.ant-select-item-option-active {
+  background-color: transparent !important;
+}
+
+.ant-select-focused .ant-select-selector {
+  border-color: var(--black) !important;
+  border-width: 2px;
+}
+
+.ant-select-selector:hover {
+  border-color: var(--black) !important;
+  border-width: 2px;
+}
+
+.ant-picker:hover {
+  border-color: var(--black) !important;
+}
+
+.ant-picker-focused {
+  border-color: var(--black) !important;
 }

@@ -37,11 +37,23 @@ export interface ProduktRequest {
 }
 
 export const getAllProducts = async (): Promise<ProduktResponse[]> => {
-    const response = await instance.get<ProduktResponse[]>('/produkt');
-    return response.data;
+  const response = await instance.get<ProduktResponse[]>('/produkt');
+  return response.data;
 };
 
 export const getProductById = async (id: number): Promise<ProduktResponse> => {
   const response = await instance.get<ProduktResponse>(`/produkt/${id}`);
   return response.data;
+};
+
+export const createProduct = async (product: ProduktRequest): Promise<void> => {
+  await instance.post('/produkt', product);
+};
+
+export const updateProduct = async (id: number, product: ProduktRequest): Promise<void> => {
+  await instance.put(`/produkt/${id}`, product);
+};
+
+export const deleteProduct = async (id: number): Promise<void> => {
+  await instance.delete(`/produkt/${id}`);
 };
