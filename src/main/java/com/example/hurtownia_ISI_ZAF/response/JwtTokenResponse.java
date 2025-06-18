@@ -1,6 +1,5 @@
 package com.example.hurtownia_ISI_ZAF.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

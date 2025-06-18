@@ -2,13 +2,11 @@ package com.example.hurtownia_ISI_ZAF.service;
 
 import com.example.hurtownia_ISI_ZAF.config.JwtConfig;
 import com.example.hurtownia_ISI_ZAF.model.Uzytkownicy;
-import com.example.hurtownia_ISI_ZAF.service.UzytkownicyService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 

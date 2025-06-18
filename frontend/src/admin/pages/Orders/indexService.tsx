@@ -55,7 +55,6 @@ export interface ZamowienieResponse {
   wartoscCalkowita: number;
 }
 
-// Zamówienia
 export const getAllOrders = async (): Promise<ZamowienieResponse[]> => {
   const response = await instance.get<ZamowienieResponse[]>('/zamowienie');
   return response.data;
@@ -78,8 +77,6 @@ export const updateCzas = async (id: number, data: Partial<Czas>): Promise<void>
   await instance.put(`/czas/${id}`, data);
 };
 
-
-// Słowniki
 export const getKlienci = async (): Promise<Klient[]> => {
   const res = await instance.get<Klient[]>('/klient');
   return res.data;
