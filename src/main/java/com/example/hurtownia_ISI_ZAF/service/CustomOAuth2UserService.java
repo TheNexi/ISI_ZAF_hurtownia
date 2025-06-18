@@ -62,6 +62,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     }
 
+    protected OAuth2User loadUserFromDelegate(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+        return delegate.loadUser(userRequest);
+    }
+
     private String generateRandomPassword() {
         byte[] randomBytes = new byte[24];
         new SecureRandom().nextBytes(randomBytes);
