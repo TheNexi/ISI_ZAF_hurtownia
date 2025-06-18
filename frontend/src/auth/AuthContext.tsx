@@ -45,10 +45,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     axios
       .post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
       .finally(() => {
-        setIsAuthenticated(false)
-        setUser(null)
-      })
-  }
+        setIsAuthenticated(false);
+        setUser(null);
+        window.location.href = '/login'; 
+      });
+  };
 
   return (
     <AuthContext.Provider

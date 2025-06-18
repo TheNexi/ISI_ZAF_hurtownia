@@ -36,12 +36,13 @@ html, body {
 
 form {
   max-width: 400px;
-  margin: 100px auto;
+  margin: 100px auto 30px auto; 
   background-color: var(--bg-white);
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
+
 
 form h2 {
   text-align: center;
@@ -350,4 +351,142 @@ form button[type="button"]:hover {
 
 .ant-picker-focused {
   border-color: var(--black) !important;
+}
+
+.browse-guest {
+  margin-top: 0.5rem; 
+  display: flex;
+  justify-content: center;
+}
+
+.btn-browse {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  background-color: var(--pink-light);
+  color: var(--bg-white);
+  padding: 0.75rem 3.5rem;
+  border: none;
+  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  width: auto;  
+  max-width: fit-content;  
+  box-shadow: 0 4px 8px rgba(225, 76, 128, 0.3);
+  user-select: none;
+}
+
+.btn-browse:hover {
+  background-color: var(--pink-main);
+  text-decoration: none;
+  color: var(--bg-white);
+}
+
+.btn-browse .arrow {
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.btn-browse:hover .arrow {
+  transform: translateX(4px);
+}
+
+.private-route-modal .ant-modal-content {
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  font-family: 'Montserrat', sans-serif;
+
+  margin: 230px auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 90vw;
+}
+
+.private-route-modal .ant-modal-header {
+  background-color: var(--btn-primary);
+  color: var(--bg-white);
+  padding: 0.75rem;
+  border-bottom: none;
+  font-weight: 700;
+  font-size: 1.4rem;
+  text-align: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.private-route-modal .ant-modal-footer {
+  border-top: none;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.private-route-message {
+  font-size: 1rem;
+  color: var(--text-color);
+  text-align: center;
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+.private-route-modal 
+  .ant-btn.ant-btn-primary.ant-btn-color-primary.ant-btn-variant-solid,
+.private-route-modal 
+  .ant-btn.ant-btn-default.ant-btn-color-default.ant-btn-variant-outlined {
+  width: 205px; 
+  height: 44px; 
+  padding: 0 1rem; 
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border: none;
+  color: var(--bg-white);
+}
+
+.private-route-modal 
+  .ant-btn.ant-btn-primary.ant-btn-color-primary.ant-btn-variant-solid {
+  background-color: var(--green-main);
+}
+
+.private-route-modal 
+  .ant-btn.ant-btn-primary.ant-btn-color-primary.ant-btn-variant-solid:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+.private-route-modal 
+  .ant-btn.ant-btn-default.ant-btn-color-default.ant-btn-variant-outlined {
+  background-color: var(--pink-light);
+}
+
+.private-route-modal 
+  .ant-btn.ant-btn-default.ant-btn-color-default.ant-btn-variant-outlined:hover {
+  background-color: var(--pink-main);
+}
+
+@media (max-width: 480px) {
+  .private-route-modal .ant-modal-content {
+    margin: 150px auto;
+    padding: 1rem;
+  }
+
+  .private-route-modal .ant-modal-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .private-route-modal 
+    .ant-btn.ant-btn-primary.ant-btn-color-primary.ant-btn-variant-solid,
+  .private-route-modal 
+    .ant-btn.ant-btn-default.ant-btn-color-default.ant-btn-variant-outlined {
+    width: 100%;
+    max-width: 300px;
+  }
 }

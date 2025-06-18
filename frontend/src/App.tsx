@@ -7,8 +7,8 @@ import Orders from './pages/Orders'
 import Deliveries from './pages/Deliveries'
 import Products from './pages/Products'
 import AdminHome from './admin/pages/Home'
-import AdminOrders from './admin/pages//Orders'
-import AdminProducts from './admin/pages//Products'
+import AdminOrders from './admin/pages/Orders'
+import AdminProducts from './admin/pages/Products'
 import AdminDeliveries from './admin/pages/Deliveries'
 import { AuthProvider, AuthContext } from './auth/AuthContext'
 import PrivateRoute from './auth/PrivateRoute'
@@ -23,42 +23,26 @@ const App = () => {
 }
 
 const AppRoutes = () => {
-  const { user } = useContext(AuthContext)
-
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/" element={<Home />} />
 
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          }
-        />
         <Route
           path="/orders"
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="USER">
               <Orders />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <PrivateRoute>
-              <Products />
             </PrivateRoute>
           }
         />
         <Route
           path="/deliveries"
           element={
-            <PrivateRoute>
+            <PrivateRoute requiredRole="USER">
               <Deliveries />
             </PrivateRoute>
           }
@@ -67,32 +51,32 @@ const AppRoutes = () => {
         <Route
           path="/admin"
           element={
-            <PrivateRoute>
-              {user?.role === 'ADMIN' ? <AdminHome /> : <div>Brak dostępu</div>}
+            <PrivateRoute requiredRole="ADMIN">
+              <AdminHome />
             </PrivateRoute>
           }
         />
         <Route
           path="/admin/orders"
           element={
-            <PrivateRoute>
-              {user?.role === 'ADMIN' ? <AdminOrders /> : <div>Brak dostępu</div>}
+            <PrivateRoute requiredRole="ADMIN">
+              <AdminOrders />
             </PrivateRoute>
           }
         />
         <Route
           path="/admin/products"
           element={
-            <PrivateRoute>
-              {user?.role === 'ADMIN' ? <AdminProducts /> : <div>Brak dostępu</div>}
+            <PrivateRoute requiredRole="ADMIN">
+              <AdminProducts />
             </PrivateRoute>
           }
         />
         <Route
           path="/admin/deliveries"
           element={
-            <PrivateRoute>
-              {user?.role === 'ADMIN' ? <AdminDeliveries /> : <div>Brak dostępu</div>}
+            <PrivateRoute requiredRole="ADMIN">
+              <AdminDeliveries />
             </PrivateRoute>
           }
         />
