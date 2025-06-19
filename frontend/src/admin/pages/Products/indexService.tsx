@@ -1,6 +1,6 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 
-const instance = axios.create({
+export const instance = axios.create({
   baseURL: 'http://localhost:8080',
   withCredentials: true,
 });
