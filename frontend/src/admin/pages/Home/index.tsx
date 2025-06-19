@@ -1,100 +1,98 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import { Row, Col, Card, Statistic, Typography } from 'antd'
-import DashboardTabs from '../../../components/DashboardTabs'
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Card, Statistic } from 'antd';
+import DashboardTabs from '../../../components/DashboardTabs';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   PieChart, Pie, Cell
-} from 'recharts'
+} from 'recharts';
 
-const { Title } = Typography
-const instance = axios.create({
-  baseURL: 'http://localhost:8080',
-  withCredentials: true,
-})
+import {
+  getProducts,
+  getAllOrders,
+  getCzasy,
+  getDostawcy,
+  getKlienci,
+  Produkt,
+  Czas,
+  Zamowienie,
+} from './indexService';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA336A', '#33AA99']
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA336A', '#33AA99'];
 
-interface Produkt {
-  id: number;
-  kategoria: string;
-}
+const HomeAdmin = () => {
+  const [productsCount, setProductsCount] = useState<number>(0);
+  const [ordersCount, setOrdersCount] = useState<number>(0);
+  const [deliveriesCount, setDeliveriesCount] = useState<number>(0);
+  const [clientsCount, setClientsCount] = useState<number>(0);
 
-interface Zamowienie {
-  id: number;
-  wartoscCalkowita: number;
-  czas: {
-    data: string; // np. '2025-06-18'
-  }
-}
-
-const Home = () => {
-  const [productsCount, setProductsCount] = useState<number>(0)
-  const [ordersCount, setOrdersCount] = useState<number>(0)
-  const [deliveriesCount, setDeliveriesCount] = useState<number>(0)
-  const [clientsCount, setClientsCount] = useState<number>(0)
-
-  const [ordersLast7Days, setOrdersLast7Days] = useState<{date: string, count: number}[]>([])
-  const [productsByCategory, setProductsByCategory] = useState<{name: string, value: number}[]>([])
+  const [ordersLast7Days, setOrdersLast7Days] = useState<{ date: string; count: number }[]>([]);
+  const [productsByCategory, setProductsByCategory] = useState<{ name: string; value: number }[]>([]);
 
   useEffect(() => {
-  instance.get('/produkt')
-    .then(res => {
-      setProductsCount(res.data.length)
-      aggregateProductsByCategory(res.data)
-    })
-    .catch(err => console.error('Error fetching /produkt:', err))
+    async function fetchData() {
+      try {
+        const [products, orders, czasy, dostawcy, klienci] = await Promise.all([
+          getProducts(),
+          getAllOrders(),
+          getCzasy(),
+          getDostawcy(),
+          getKlienci(),
+        ]);
 
-  instance.get('/zamowienie')
-    .then(res => {
-      setOrdersCount(res.data.length)
-      aggregateOrdersLast7Days(extractContent(res.data))
-    })
-    .catch(err => console.error('Error fetching /zamowienie:', err))
+        setProductsCount(products.length);
+        setOrdersCount(orders.length);
+        setDeliveriesCount(dostawcy.length);
+        setClientsCount(klienci.length);
 
-  instance.get('/dostawca')
-    .then(res => setDeliveriesCount(res.data.length))
-    .catch(err => console.error('Error fetching /dostawca:', err))
+        aggregateProductsByCategory(products);
 
-  instance.get('/klient')
-    .then(res => setClientsCount(res.data.length))
-    .catch(err => console.error('Error fetching /klient:', err))
-}, [])
+        const czasMap: Record<number, Czas> = {};
+        czasy.forEach(c => {
+          czasMap[c.id] = c;
+        });
 
-
-  function extractContent(data: any): any[] {
-    return Array.isArray(data) ? data : data?.content || []
-  }
+        aggregateOrdersLast7Days(orders, czasMap);
+      } catch (error) {
+        console.error('Błąd podczas pobierania danych:', error);
+      }
+    }
+    fetchData();
+  }, []);
 
   function aggregateProductsByCategory(products: Produkt[]) {
-    const categoryMap: Record<string, number> = {}
+    const categoryMap: Record<string, number> = {};
     products.forEach(prod => {
-      const cat = prod.kategoria || 'Inne'
-      categoryMap[cat] = (categoryMap[cat] || 0) + 1
-    })
-    const data = Object.entries(categoryMap).map(([name, value]) => ({ name, value }))
-    setProductsByCategory(data)
+      const cat = prod.kategoria || 'Inne';
+      categoryMap[cat] = (categoryMap[cat] || 0) + 1;
+    });
+    const data = Object.entries(categoryMap).map(([name, value]) => ({ name, value }));
+    setProductsByCategory(data);
   }
 
-  function aggregateOrdersLast7Days(zamowienia: Zamowienie[]) {
-    const today = new Date()
-    const datesMap: Record<string, number> = {}
+  function aggregateOrdersLast7Days(orders: Zamowienie[], czasMap: Record<number, Czas>) {
+    const today = new Date();
+    const datesMap: Record<string, number> = {};
+
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(today)
-      d.setDate(today.getDate() - i)
-      const key = d.toISOString().slice(0, 10)
-      datesMap[key] = 0
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      datesMap[key] = 0;
     }
 
-    zamowienia.forEach(z => {
-      const orderDate = z.czas?.data?.slice(0, 10)
-      if (orderDate && orderDate in datesMap) {
-        datesMap[orderDate]++
-      }
-    })
+    orders.forEach(order => {
+      const czas = czasMap[order.idCzas];
+      if (!czas) return;
 
-    const chartData = Object.entries(datesMap).map(([date, count]) => ({ date, count }))
-    setOrdersLast7Days(chartData)
+       const orderDate = `${czas.rok.toString().padStart(4, '0')}-${(czas.miesiac).toString().padStart(2, '0')}-${czas.dzien.toString().padStart(2, '0')}`;
+
+      if (orderDate in datesMap) {
+        datesMap[orderDate]++;
+      }
+    });
+
+    const chartData = Object.entries(datesMap).map(([date, count]) => ({ date, count }));
+    setOrdersLast7Days(chartData);
   }
 
   return (
@@ -105,27 +103,19 @@ const Home = () => {
 
         <Row gutter={[16, 16]} className="stats-row">
           <Col xs={24} sm={12} md={12} lg={6}>
-            <Card>
-              <Statistic title="Produkty" value={productsCount} />
-            </Card>
+            <Card><Statistic title="Produkty" value={productsCount} /></Card>
           </Col>
 
           <Col xs={24} sm={12} md={12} lg={6}>
-            <Card>
-              <Statistic title="Zamówienia" value={ordersCount} />
-            </Card>
+            <Card><Statistic title="Zamówienia" value={ordersCount} /></Card>
           </Col>
 
           <Col xs={24} sm={12} md={12} lg={6}>
-            <Card>
-              <Statistic title="Dostawcy" value={deliveriesCount} />
-            </Card>
+            <Card><Statistic title="Dostawcy" value={deliveriesCount} /></Card>
           </Col>
 
           <Col xs={24} sm={12} md={12} lg={6}>
-            <Card>
-              <Statistic title="Klienci" value={clientsCount} />
-            </Card>
+            <Card><Statistic title="Klienci" value={clientsCount} /></Card>
           </Col>
         </Row>
 
@@ -170,7 +160,7 @@ const Home = () => {
         </Row>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default HomeAdmin;

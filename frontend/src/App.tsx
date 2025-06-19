@@ -1,4 +1,3 @@
-import React, { useContext } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -10,7 +9,7 @@ import AdminHome from './admin/pages/Home'
 import AdminOrders from './admin/pages/Orders'
 import AdminProducts from './admin/pages/Products'
 import AdminDeliveries from './admin/pages/Deliveries'
-import { AuthProvider, AuthContext } from './auth/AuthContext'
+import { AuthProvider} from './auth/AuthContext'
 import PrivateRoute from './auth/PrivateRoute'
 import './styles/global.css'
 
