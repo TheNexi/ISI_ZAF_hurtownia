@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,4 +28,6 @@ public class ZamowienieRequest {
 
     @Schema(example = "1000.0")
     private Double wartoscCalkowita;
+
+    private List<ProduktWZamowieniuRequest> produkty;
 }
