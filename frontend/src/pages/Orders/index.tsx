@@ -1,16 +1,192 @@
-import React from 'react'
-import DashboardTabs from '../../components/DashboardTabs'
+import React, { useEffect, useState } from 'react';
+import DashboardTabs from '../../components/DashboardTabs';
+import OrdersList from './ordersList';
+import { ProduktResponse, getAllProducts } from '../Products/indexService';
+import { createOrder } from './OrdersService';
+import axios from 'axios';
 
-const Orders = () => {
-  return (
-  <div className="container">
-    <DashboardTabs role="USER"/> 
-    <div className="page-content">
-      <h1>Zawartość strony Zamówienia</h1>
-    </div>
-  </div>
-
-  )
+interface Dostawca {
+  id: number;
+  nazwa: string;
 }
 
-export default Orders
+interface Magazyn {
+  id: number;
+  nazwa: string;
+}
+
+interface User {
+  id: number;
+}
+
+const Orders = () => {
+  const [products, setProducts] = useState<ProduktResponse[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<Record<number, number>>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+  const [orderId, setOrderId] = useState<number | null>(null);
+
+  const [user, setUser] = useState<User | null>(null);
+  const [dostawcy, setDostawcy] = useState<Dostawca[]>([]);
+  const [magazyny, setMagazyny] = useState<Magazyn[]>([]);
+
+  const [selectedDostawcaId, setSelectedDostawcaId] = useState<number | null>(null);
+  const [selectedMagazynId, setSelectedMagazynId] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function fetchInitialData() {
+      setLoading(true);
+      try {
+        const prods = await getAllProducts();
+        setProducts(prods);
+
+        const userResponse = await axios.get<User>('http://localhost:8080/profile/client', { withCredentials: true });
+        setUser(userResponse.data);
+
+        const dostawcaResponse = await axios.get<Dostawca[]>('http://localhost:8080/dostawca', { withCredentials: true });
+        setDostawcy(dostawcaResponse.data);
+
+        const magazynResponse = await axios.get<Magazyn[]>('http://localhost:8080/magazyn', { withCredentials: true });
+        setMagazyny(magazynResponse.data);
+
+        if (dostawcaResponse.data.length > 0) {
+          setSelectedDostawcaId(dostawcaResponse.data[0].id);
+        }
+        if (magazynResponse.data.length > 0) {
+          setSelectedMagazynId(magazynResponse.data[0].id);
+        }
+      } catch (e) {
+        setError('Błąd podczas pobierania danych');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchInitialData();
+  }, []);
+
+  const updateQuantity = (productId: number, qty: number) => {
+    setSelectedProducts(prev => {
+      const copy = { ...prev };
+      if (qty <= 0) {
+        delete copy[productId];
+      } else {
+        copy[productId] = qty;
+      }
+      return copy;
+    });
+  };
+
+  const totalPrice = Object.entries(selectedProducts).reduce((sum, [id, qty]) => {
+    const prod = products.find(p => p.id === Number(id));
+    if (!prod) return sum;
+    return sum + prod.cena * qty;
+  }, 0);
+
+  const handleCreateOrder = async () => {
+    if (!user || !user.id) {
+    setError('Brak danych klienta. Uzupełnij dane w profilu.');
+    return;
+  }
+
+  if (!selectedDostawcaId) {
+    setError('Wybierz dostawcę');
+    return;
+  }
+
+  if (!selectedMagazynId) {
+    setError('Wybierz magazyn');
+    return;
+  }
+
+  const selectedProductEntries = Object.entries(selectedProducts).filter(([_, qty]) => qty > 0);
+
+  if (selectedProductEntries.length === 0) {
+    setError('Wybierz przynajmniej jeden produkt');
+    return;
+  }
+    try {
+      const idCzas = 1; // DO ZMIANY
+
+      const orderData = {
+        idKlient: user.id,
+        idCzas,
+        idDostawca: selectedDostawcaId,
+        idMagazyn: selectedMagazynId,
+        wartoscCalkowita: totalPrice,
+        produkty: Object.entries(selectedProducts).map(([productId, qty]) => ({
+          idProdukt: Number(productId),
+          ilosc: qty,
+        })),
+      };
+
+      const response = await createOrder(orderData);
+      setOrderId(response.id || response.orderId);
+    } catch (err) {
+      setError('Błąd przy składaniu zamówienia');
+    }
+  };
+
+  return (
+    <div className="container">
+      <DashboardTabs role="USER" />
+      <div className="page-content">
+        <h1>Zamówienia</h1>
+        {error && <p className="error-message">{error}</p>}
+
+        {loading ? (
+          <p>Ładowanie danych...</p>
+        ) : (
+          <>
+            <div>
+              <label>
+                Wybierz dostawcę:
+                <select
+                  value={selectedDostawcaId ?? ''}
+                  onChange={e => setSelectedDostawcaId(Number(e.target.value))}
+                >
+                  {dostawcy.map(d => (
+                    <option key={d.id} value={d.id}>
+                      {d.nazwa}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div>
+              <label>
+                Wybierz magazyn:
+                <select
+                  value={selectedMagazynId ?? ''}
+                  onChange={e => setSelectedMagazynId(Number(e.target.value))}
+                >
+                  {magazyny.map(m => (
+                    <option key={m.id} value={m.id}>
+                      {m.nazwa}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <OrdersList products={products} selectedProducts={selectedProducts} updateQuantity={updateQuantity} />
+
+            <h3>Łączna kwota: {totalPrice.toFixed(2)} zł</h3>
+
+            <button onClick={handleCreateOrder} className="btn btn-success">
+              Zapłać gotówką
+            </button>
+
+            {orderId && (
+              <p style={{ color: 'green' }}>
+                Zamówienie nr {orderId} zostało utworzone. Dziękujemy!
+              </p>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Orders;
