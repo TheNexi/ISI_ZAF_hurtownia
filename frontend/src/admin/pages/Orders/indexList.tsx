@@ -117,7 +117,7 @@ const OrderList: React.FC<OrderListProps> = ({ orders, onRefresh, onEdit }) => {
           FAILED: 'red',
           OFFLINE: 'blue',
         }[status] || 'black';
-        return <span style={{ color }}>{status}</span>;
+        return <span style={{ color, fontWeight: 'bold'}}>{status}</span>;
       },
     }
     ,

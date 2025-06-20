@@ -60,7 +60,7 @@ const HomeUser = () => {
     <div className="container">
       <DashboardTabs role="USER" />
       <div className="page-content">
-        <h1 className="header">Strona użytkownika</h1>
+        <h1 className="header">Strona główna</h1>
 
         <Row gutter={[16, 16]} className="stats-row">
           <Col xs={24} sm={12} md={12} lg={6}>

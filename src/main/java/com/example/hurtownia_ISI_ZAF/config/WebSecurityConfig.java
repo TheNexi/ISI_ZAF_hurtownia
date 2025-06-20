@@ -53,6 +53,7 @@ public class WebSecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/",
+                                "/**",
                                 "/produkt",
                                 "/produkt/**",
                                 "/login/**",

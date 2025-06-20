@@ -84,26 +84,27 @@ const Orders = () => {
 
   const handleCreateOrder = async () => {
     if (!user || !user.id) {
-    setError('Brak danych klienta. Uzupełnij dane w profilu.');
-    return;
-  }
+      setError('Brak danych klienta. Uzupełnij dane w profilu.');
+      return;
+    }
 
-  if (!selectedDostawcaId) {
-    setError('Wybierz dostawcę');
-    return;
-  }
+    if (!selectedDostawcaId) {
+      setError('Wybierz dostawcę');
+      return;
+    }
 
-  if (!selectedMagazynId) {
-    setError('Wybierz magazyn');
-    return;
-  }
+    if (!selectedMagazynId) {
+      setError('Wybierz magazyn');
+      return;
+    }
 
-  const selectedProductEntries = Object.entries(selectedProducts).filter(([_, qty]) => qty > 0);
+    const selectedProductEntries = Object.entries(selectedProducts).filter(([_, qty]) => qty > 0);
 
-  if (selectedProductEntries.length === 0) {
-    setError('Wybierz przynajmniej jeden produkt');
-    return;
-  }
+    if (selectedProductEntries.length === 0) {
+      setError('Wybierz przynajmniej jeden produkt');
+      return;
+    }
+
     try {
       const idCzas = 1; // DO ZMIANY
 
@@ -130,17 +131,19 @@ const Orders = () => {
     <div className="container">
       <DashboardTabs role="USER" />
       <div className="page-content">
-        <h1>Zamówienia</h1>
+        <h1 className="header">Zamówienia</h1>
         {error && <p className="error-message">{error}</p>}
 
         {loading ? (
           <p>Ładowanie danych...</p>
         ) : (
           <>
-            <div>
-              <label>
-                Wybierz dostawcę:
+            <OrdersList products={products} selectedProducts={selectedProducts} updateQuantity={updateQuantity} />
+
+              <div className="form-wrapper">
+                <label className="form-label">Wybierz dostawcę:</label>
                 <select
+                  className="select-input"
                   value={selectedDostawcaId ?? ''}
                   onChange={e => setSelectedDostawcaId(Number(e.target.value))}
                 >
@@ -150,13 +153,12 @@ const Orders = () => {
                     </option>
                   ))}
                 </select>
-              </label>
-            </div>
+              </div>
 
-            <div>
-              <label>
-                Wybierz magazyn:
+              <div className="form-wrapper">
+                <label className="form-label">Wybierz magazyn:</label>
                 <select
+                  className="select-input"
                   value={selectedMagazynId ?? ''}
                   onChange={e => setSelectedMagazynId(Number(e.target.value))}
                 >
@@ -166,19 +168,18 @@ const Orders = () => {
                     </option>
                   ))}
                 </select>
-              </label>
-            </div>
+              </div>
 
-            <OrdersList products={products} selectedProducts={selectedProducts} updateQuantity={updateQuantity} />
+            <h3 className="headernumber3">
+              Łączna kwota: {totalPrice.toFixed(2)} zł
+            </h3>
 
-            <h3>Łączna kwota: {totalPrice.toFixed(2)} zł</h3>
-
-            <button onClick={handleCreateOrder} className="btn btn-success">
+            <button onClick={handleCreateOrder} className="btn btn-pay">
               Zapłać gotówką
             </button>
 
             {orderId && (
-              <p style={{ color: 'green' }}>
+              <p style={{ color: 'green', marginTop: '1rem' }}>
                 Zamówienie nr {orderId} zostało utworzone. Dziękujemy!
               </p>
             )}
