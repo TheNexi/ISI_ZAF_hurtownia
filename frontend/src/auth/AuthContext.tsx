@@ -7,7 +7,7 @@ type UserType = {
   role: string
 }
 
-type AuthContextType = {
+export type AuthContextType = {
   isAuthenticated: boolean
   setAuthenticated: (value: boolean) => void
   user: UserType | null

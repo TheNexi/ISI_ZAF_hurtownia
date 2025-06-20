@@ -7,13 +7,17 @@ interface DashboardTabsProps {
 }
 
 const DashboardTabs: React.FC<DashboardTabsProps> = ({ role }) => {
-  const { logout } = useContext(AuthContext)
+  const { user, logout } = useContext(AuthContext)
   const navigate = useNavigate()
 
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
 
   return (
     <div className="header">
@@ -50,9 +54,16 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({ role }) => {
           </>
         )}
       </nav>
-      <button className="btn btn-logout" onClick={handleLogout}>
-        Wyloguj się
-      </button>
+
+      {user ? (
+        <button className="btn btn-logout" onClick={handleLogout}>
+          Wyloguj się
+        </button>
+      ) : (
+        <button className="btn btn-logout" onClick={handleLogin}>
+          Zaloguj się
+        </button>
+      )}
     </div>
   )
 }

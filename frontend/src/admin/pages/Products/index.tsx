@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DashboardTabs from '../../../components/DashboardTabs';
 import ProductList from './indexList';
 import ProductForm from './indexForm';
