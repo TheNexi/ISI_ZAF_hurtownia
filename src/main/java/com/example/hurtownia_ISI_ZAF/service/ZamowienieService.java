@@ -1,13 +1,9 @@
 package com.example.hurtownia_ISI_ZAF.service;
 
-import com.example.hurtownia_ISI_ZAF.model.Zamowienie;
-import com.example.hurtownia_ISI_ZAF.repository.ZamowienieRepository;
-import com.example.hurtownia_ISI_ZAF.repository.KlientRepository;
-import com.example.hurtownia_ISI_ZAF.repository.CzasRepository;
-import com.example.hurtownia_ISI_ZAF.repository.DostawcaRepository;
-import com.example.hurtownia_ISI_ZAF.repository.MagazynRepository;
-import com.example.hurtownia_ISI_ZAF.request.ZamowienieRequest;
-import com.example.hurtownia_ISI_ZAF.response.ZamowienieResponse;
+import com.example.hurtownia_ISI_ZAF.model.*;
+import com.example.hurtownia_ISI_ZAF.repository.*;
+import com.example.hurtownia_ISI_ZAF.request.*;
+import com.example.hurtownia_ISI_ZAF.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,18 +18,24 @@ public class ZamowienieService {
     private final CzasRepository czasRepository;
     private final DostawcaRepository dostawcaRepository;
     private final MagazynRepository magazynRepository;
+    private final ProduktRepository produktRepository;
+    private final ProduktWZamowieniuRepository produktWZamowieniuRepository;
 
     @Autowired
     public ZamowienieService(ZamowienieRepository zamowienieRepository,
                              KlientRepository klientRepository,
                              CzasRepository czasRepository,
                              DostawcaRepository dostawcaRepository,
-                             MagazynRepository magazynRepository) {
+                             MagazynRepository magazynRepository,
+                             ProduktRepository produktRepository,
+                             ProduktWZamowieniuRepository produktWZamowieniuRepository) {
         this.zamowienieRepository = zamowienieRepository;
         this.klientRepository = klientRepository;
         this.czasRepository = czasRepository;
         this.dostawcaRepository = dostawcaRepository;
         this.magazynRepository = magazynRepository;
+        this.produktRepository = produktRepository;
+        this.produktWZamowieniuRepository = produktWZamowieniuRepository;
     }
 
     public List<ZamowienieResponse> getAllZamowienia() {
@@ -73,10 +75,30 @@ public class ZamowienieService {
         zamowienie.setDostawca(dostawca);
         zamowienie.setMagazyn(magazyn);
         zamowienie.setWartoscCalkowita(request.getWartoscCalkowita());
+        zamowienie.setStatusPlatnosci(Zamowienie.StatusPlatnosci.PENDING);
 
-        zamowienieRepository.save(zamowienie);
+        Zamowienie zapisaneZamowienie = zamowienieRepository.save(zamowienie);
 
-        return mapToResponse(zamowienie);
+        if (request.getProdukty() != null && !request.getProdukty().isEmpty()) {
+            List<ProduktWZamowieniu> produktyWZamowieniu = request.getProdukty().stream().map(p -> {
+                Produkt produkt = produktRepository.findById(p.getIdProdukt())
+                        .orElseThrow(() -> new RuntimeException("Produkt with ID " + p.getIdProdukt() + " not found"));
+
+                ProduktWZamowieniu pwz = new ProduktWZamowieniu();
+                pwz.setZamowienie(zapisaneZamowienie);
+                pwz.setProdukt(produkt);
+                pwz.setIlosc(p.getIlosc());
+                pwz.setCena(produkt.getCena());
+                pwz.setRabat(0.0);
+                pwz.setWartoscLaczna(produkt.getCena() * p.getIlosc());
+                return pwz;
+            }).collect(Collectors.toList());
+
+            produktWZamowieniuRepository.saveAll(produktyWZamowieniu);
+            zapisaneZamowienie.setProduktyWZamowieniu(produktyWZamowieniu);
+        }
+
+        return mapToResponse(zapisaneZamowienie);
     }
 
     public ZamowienieResponse updateZamowienie(Integer id, ZamowienieRequest request) {
@@ -101,7 +123,28 @@ public class ZamowienieService {
         zamowienie.setMagazyn(magazyn);
         zamowienie.setWartoscCalkowita(request.getWartoscCalkowita());
 
-        return mapToResponse(zamowienieRepository.save(zamowienie));
+        zamowienieRepository.save(zamowienie);
+
+        produktWZamowieniuRepository.deleteByZamowienie_Id(id);
+
+        List<ProduktWZamowieniu> noweProduktyWZamowieniu = request.getProdukty().stream().map(p -> {
+            Produkt produkt = produktRepository.findById(p.getIdProdukt())
+                    .orElseThrow(() -> new RuntimeException("Produkt with ID " + p.getIdProdukt() + " not found"));
+
+            ProduktWZamowieniu pwz = new ProduktWZamowieniu();
+            pwz.setZamowienie(zamowienie);
+            pwz.setProdukt(produkt);
+            pwz.setIlosc(p.getIlosc());
+            pwz.setCena(produkt.getCena());
+            pwz.setRabat(0.0);
+            pwz.setWartoscLaczna(produkt.getCena() * p.getIlosc());
+            return pwz;
+        }).collect(Collectors.toList());
+
+        produktWZamowieniuRepository.saveAll(noweProduktyWZamowieniu);
+        zamowienie.setProduktyWZamowieniu(noweProduktyWZamowieniu);
+
+        return mapToResponse(zamowienie);
     }
 
     public void deleteZamowienie(Integer id) {
@@ -110,14 +153,32 @@ public class ZamowienieService {
         zamowienieRepository.delete(zamowienie);
     }
 
+    public ZamowienieResponse zatwierdzPlatnoscOffline(Integer id) {
+        Zamowienie zamowienie = zamowienieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Zamówienie o ID " + id + " nie istnieje"));
+
+        zamowienie.setStatusPlatnosci(Zamowienie.StatusPlatnosci.OFFLINE);
+        zamowienieRepository.save(zamowienie);
+
+        return mapToResponse(zamowienie);
+    }
+
     private ZamowienieResponse mapToResponse(Zamowienie zamowienie) {
+        List<ProduktWZamowieniuResponse> produktyResponse = zamowienie.getProduktyWZamowieniu() == null
+                ? List.of()
+                : zamowienie.getProduktyWZamowieniu().stream()
+                .map(ProduktWZamowieniuResponse::new)
+                .collect(Collectors.toList());
+
         return new ZamowienieResponse(
                 zamowienie.getId(),
                 zamowienie.getKlient().getId(),
                 zamowienie.getCzas().getId(),
                 zamowienie.getDostawca().getId(),
                 zamowienie.getMagazyn().getId(),
-                zamowienie.getWartoscCalkowita()
+                zamowienie.getWartoscCalkowita(),
+                zamowienie.getStatusPlatnosci().name(),
+                produktyResponse
         );
     }
 }

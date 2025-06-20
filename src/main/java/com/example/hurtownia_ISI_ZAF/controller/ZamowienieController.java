@@ -32,7 +32,7 @@ public class ZamowienieController {
         return ResponseEntity.ok(zamowienieService.getZamowienieById(id));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ZamowienieResponse> addZamowienie(@RequestBody ZamowienieRequest request) {
         return ResponseEntity.status(201).body(zamowienieService.addZamowienie(request));
     }
@@ -47,4 +47,11 @@ public class ZamowienieController {
         zamowienieService.deleteZamowienie(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/zatwierdz-offline")
+    public ResponseEntity<ZamowienieResponse> zatwierdzOffline(@PathVariable Integer id) {
+        ZamowienieResponse response = zamowienieService.zatwierdzPlatnoscOffline(id);
+        return ResponseEntity.ok(response);
+    }
+
 }

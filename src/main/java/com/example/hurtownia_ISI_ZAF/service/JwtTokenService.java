@@ -35,15 +35,20 @@ public class JwtTokenService {
         String username = "";
         String email = "";
         String role = "";
+        Integer idKlient = null;
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof String) {
             username = (String) principal;
             Optional<Uzytkownicy> userOpt = uzytkownicyService.findUserByLogin(username);
             if (userOpt.isPresent()) {
-                email = userOpt.get().getEmail();
-                role = userOpt.get().getRole();
-                System.out.println("ROLA W BAZIE: "+role);
+                Uzytkownicy user = userOpt.get();
+                email = user.getEmail();
+                role = user.getRole();
+                if (user.getKlient() != null) {
+                    idKlient = user.getKlient().getId();
+                }
+
             }
         } else if (principal instanceof OAuth2User) {
             OAuth2User oAuth2User = (OAuth2User) principal;
@@ -54,19 +59,32 @@ public class JwtTokenService {
                     .map(GrantedAuthority::getAuthority)
                     .map(r -> r.replace("ROLE_", ""))
                     .orElse("USER");
+
+            Optional<Uzytkownicy> userOpt = uzytkownicyService.findUserByEmail(email);
+            if (userOpt.isPresent()) {
+                Uzytkownicy user = userOpt.get();
+                if (user.getKlient() != null) {
+                    idKlient = user.getKlient().getId();
+                }
+            }
         }
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtConfig.getJwtExpirationMs());
 
-        return Jwts.builder()
+        JwtBuilder builder = Jwts.builder()
                 .setSubject(email)
                 .claim("login", username)
                 .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(secretKey, SignatureAlgorithm.HS512)
-                .compact();
+                .signWith(secretKey, SignatureAlgorithm.HS512);
+
+        if (idKlient != null) {
+            builder.claim("id_klient", idKlient);
+        }
+
+        return builder.compact();
     }
 
     public boolean validateToken(String token) {
@@ -111,4 +129,12 @@ public class JwtTokenService {
         return claims.get("login", String.class);
     }
 
+    public Integer getIdKlientFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("id_klient", Integer.class);
+    }
 }

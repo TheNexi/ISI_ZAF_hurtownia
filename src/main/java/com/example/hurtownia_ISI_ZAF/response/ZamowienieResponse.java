@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,6 +18,8 @@ public class ZamowienieResponse {
     private Integer idDostawca;
     private Integer idMagazyn;
     private Double wartoscCalkowita;
+    private String statusPlatnosci;
+    private List<ProduktWZamowieniuResponse> produkty;
 
     public ZamowienieResponse(Zamowienie zamowienie) {
         if (zamowienie != null) {
@@ -25,6 +29,12 @@ public class ZamowienieResponse {
             this.idDostawca = zamowienie.getDostawca().getId();
             this.idMagazyn = zamowienie.getMagazyn().getId();
             this.wartoscCalkowita = zamowienie.getWartoscCalkowita();
+            this.statusPlatnosci = zamowienie.getStatusPlatnosci().name();
+            this.produkty = zamowienie.getProduktyWZamowieniu() != null
+                    ? zamowienie.getProduktyWZamowieniu().stream()
+                    .map(ProduktWZamowieniuResponse::new)
+                    .toList()
+                    : List.of();
         }
     }
 }

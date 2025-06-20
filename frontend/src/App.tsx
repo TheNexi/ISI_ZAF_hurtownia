@@ -3,13 +3,13 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home'
 import Orders from './pages/Orders'
-import Deliveries from './pages/Deliveries'
+import Profile from './pages/Profile'
 import Products from './pages/Products'
 import AdminHome from './admin/pages/Home'
 import AdminOrders from './admin/pages/Orders'
 import AdminProducts from './admin/pages/Products'
 import AdminDeliveries from './admin/pages/Deliveries'
-import { AuthProvider} from './auth/AuthContext'
+import { AuthProvider } from './auth/AuthContext'
 import PrivateRoute from './auth/PrivateRoute'
 import './styles/global.css'
 
@@ -39,10 +39,10 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/deliveries"
+          path="/profile"
           element={
             <PrivateRoute requiredRole="USER">
-              <Deliveries />
+              <Profile />
             </PrivateRoute>
           }
         />

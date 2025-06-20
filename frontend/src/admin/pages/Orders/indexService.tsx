@@ -53,6 +53,7 @@ export interface ZamowienieResponse {
   idDostawca: number;
   idMagazyn: number;
   wartoscCalkowita: number;
+  statusPlatnosci: 'PENDING' | 'SUCCESS' | 'FAILED' | 'OFFLINE';
 }
 
 export const getAllOrders = async (): Promise<ZamowienieResponse[]> => {

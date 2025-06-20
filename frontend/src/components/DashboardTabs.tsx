@@ -48,8 +48,8 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({ role }) => {
             <NavLink to="/products" className={({ isActive }) => isActive ? 'tab active' : 'tab'}>
               Produkty
             </NavLink>
-            <NavLink to="/deliveries" className={({ isActive }) => isActive ? 'tab active' : 'tab'}>
-              Dostawy
+            <NavLink to="/profile" className={({ isActive }) => isActive ? 'tab active' : 'tab'}>
+              Profil
             </NavLink>
           </>
         )}

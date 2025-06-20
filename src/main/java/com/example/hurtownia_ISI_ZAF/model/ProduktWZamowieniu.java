@@ -26,13 +26,13 @@ public class ProduktWZamowieniu {
     @JoinColumn(name = "id_produkt")
     private Produkt produkt;
 
-    @JoinColumn(name = "ilosc")
+    @Column(name = "ilosc")
     private Integer ilosc;
 
-    @JoinColumn(name = "cena")
+    @Column(name = "cena")
     private Double cena;
 
-    @JoinColumn(name = "rabat")
+    @Column(name = "rabat")
     private Double rabat;
 
     @Column(name = "wartosc_laczna")

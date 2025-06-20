@@ -28,5 +28,9 @@ public class Uzytkownicy {
     @Column(name = "role")
     private String role;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_klient", referencedColumnName = "id_klient")
+    private Klient klient;
+
 
 }

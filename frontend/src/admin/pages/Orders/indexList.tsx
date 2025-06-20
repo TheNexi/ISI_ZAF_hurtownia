@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Popconfirm } from 'antd';
+import axios from 'axios';
 import type { ColumnsType } from 'antd/es/table';
 import {
   ZamowienieResponse,
@@ -58,6 +59,17 @@ const OrderList: React.FC<OrderListProps> = ({ orders, onRefresh, onEdit }) => {
     }
   };
 
+  const handleApprovePayment = async (orderId: number) => {
+  try {
+    await axios.post(`http://localhost:8080/zamowienie/${orderId}/zatwierdz-offline`, {}, { withCredentials: true });
+    onRefresh();
+  } catch (error) {
+    console.error('Błąd podczas zatwierdzania płatności offline:', error);
+  }
+  };
+
+
+
   const columns: ColumnsType<ZamowienieResponse> = [
     {
       title: 'ID',
@@ -95,6 +107,21 @@ const OrderList: React.FC<OrderListProps> = ({ orders, onRefresh, onEdit }) => {
       render: (value: number) => `${value.toFixed(2)} zł`,
     },
     {
+      title: 'Status płatności',
+      dataIndex: 'statusPlatnosci',
+      key: 'statusPlatnosci',
+      render: (status: string) => {
+        const color = {
+          PENDING: 'orange',
+          SUCCESS: 'green',
+          FAILED: 'red',
+          OFFLINE: 'blue',
+        }[status] || 'black';
+        return <span style={{ color }}>{status}</span>;
+      },
+    }
+    ,
+    {
       title: 'Akcje',
       key: 'akcje',
       render: (_text, record) => (
@@ -110,6 +137,19 @@ const OrderList: React.FC<OrderListProps> = ({ orders, onRefresh, onEdit }) => {
           >
             <button className="btn-action btn-delete">Usuń</button>
           </Popconfirm>
+
+          {record.statusPlatnosci === 'PENDING' && (
+          <Popconfirm
+            title="Zatwierdzić płatność offline?"
+            onConfirm={() => handleApprovePayment(record.id)}
+            okText="Tak"
+            cancelText="Nie"
+            okButtonProps={{ className: 'btn-action btn-edit' }}
+            cancelButtonProps={{ className: 'btn-action btn-delete' }}
+          >
+            <button className="btn-action btn-success">Zatwierdź płatność</button>
+          </Popconfirm>
+          )}
         </div>
       ),
     },
