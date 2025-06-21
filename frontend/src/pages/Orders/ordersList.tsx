@@ -10,7 +10,7 @@ interface OrdersListProps {
 const OrdersList: React.FC<OrdersListProps> = ({ products, selectedProducts, updateQuantity }) => {
   return (
     <div className="table-responsive">
-      <h2>Złóż zamówienie</h2>
+      <h2 className="header2">Złóż zamówienie</h2>
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -29,6 +29,7 @@ const OrdersList: React.FC<OrdersListProps> = ({ products, selectedProducts, upd
                   type="number"
                   min={0}
                   className="quantity-input"
+                  aria-label={`Ilość ${prod.nazwa}`} 
                   value={selectedProducts[prod.id] || 0}
                   onChange={e => updateQuantity(prod.id, Number(e.target.value))}
                 />

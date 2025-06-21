@@ -138,7 +138,7 @@ const Orders = () => {
     }
 
     try {
-      const idCzas = 1; // DO ZMIANY
+      const idCzas = 2; 
 
       const orderData = {
         idKlient: user.id,
@@ -194,35 +194,38 @@ const Orders = () => {
 
             <OrdersList products={products} selectedProducts={selectedProducts} updateQuantity={updateQuantity} />
 
-            <div className="form-wrapper">
-              <label className="form-label">Wybierz dostawcę:</label>
-              <select
-                className="select-input"
-                value={selectedDostawcaId ?? ''}
-                onChange={e => setSelectedDostawcaId(Number(e.target.value))}
-              >
-                {dostawcy.map(d => (
-                  <option key={d.id} value={d.id}>
-                    {d.nazwa}
-                  </option>
-                ))}
-              </select>
-            </div>
+              <div className="form-wrapper">
+                <label className="form-label" htmlFor="dostawca-select">Wybierz dostawcę:</label>
+                <select
+                  id="dostawca-select"
+                  className="select-input"
+                  value={selectedDostawcaId ?? ''}
+                  onChange={e => setSelectedDostawcaId(Number(e.target.value))}
+                >
+                  {dostawcy.map(d => (
+                    <option key={d.id} value={d.id}>
+                      {d.nazwa}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <div className="form-wrapper">
-              <label className="form-label">Wybierz magazyn:</label>
-              <select
-                className="select-input"
-                value={selectedMagazynId ?? ''}
-                onChange={e => setSelectedMagazynId(Number(e.target.value))}
-              >
-                {magazyny.map(m => (
-                  <option key={m.id} value={m.id}>
-                    {m.nazwa}
-                  </option>
-                ))}
-              </select>
-            </div>
+              <div className="form-wrapper">
+                <label className="form-label" htmlFor="magazyn-select">Wybierz magazyn:</label>
+                <select
+                  id="magazyn-select"
+                  className="select-input"
+                  value={selectedMagazynId ?? ''}
+                  onChange={e => setSelectedMagazynId(Number(e.target.value))}
+                >
+                  {magazyny.map(m => (
+                    <option key={m.id} value={m.id}>
+                      {m.nazwa}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
 
             <h3 className="headernumber3">
               Łączna kwota: {totalPrice.toFixed(2)} zł

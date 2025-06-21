@@ -611,7 +611,7 @@ form button[type="button"]:hover {
   border: none;
   transition: background-color 0.3s ease;
   display: block;
-  margin: 0 auto;
+  margin: 1.5rem auto;
   text-align: center;
 }
 
@@ -622,7 +622,6 @@ form button[type="button"]:hover {
 .headernumber3{
   margin-left: 37.25rem;
   margin-top: 1rem;
-  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 830px) {
@@ -658,4 +657,38 @@ form button[type="button"]:hover {
     text-align: left;
     font-size: 0.95rem;
   }
+}
+
+.payment-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 60vh; 
+  gap: 1rem;
+  margin-top: 6.5rem;
+  padding: 1rem;
+}
+
+.payment-result-title {
+  font-size: 2rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.payment-result-text {
+  font-size: 1.2rem;
+  margin: 0 0 1.5rem 0;
+  max-width: 400px;
+}
+
+.ant-btn.btn-browse:hover {
+  background-color: var(--pink-main) !important;
+  color: var(--bg-white) !important;
+}
+
+.header2{
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }

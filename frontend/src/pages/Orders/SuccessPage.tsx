@@ -1,5 +1,5 @@
-import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
 
 const PaymentResult = () => {
   const navigate = useNavigate();
@@ -21,21 +21,29 @@ const PaymentResult = () => {
     }
   };
 
-  if (errorCode) {
-    return (
-      <div className="payment-result">
-        <h2>Wystąpił błąd!</h2>
-        <p>{getErrorMessage(errorCode)}</p>
-        <button onClick={() => navigate('/')}>Powrót do strony głównej</button>
-      </div>
-    );
-  }
+  const handleBackToHome = () => {
+    navigate('/');
+  };
 
   return (
     <div className="payment-result">
-      <h2>Dziękujemy za płatność!</h2>
-      <p>Twoje zamówienie zostało opłacone. Wkrótce je zrealizujemy.</p>
-      <button onClick={() => navigate('/')}>Powrót do strony głównej</button>
+      {errorCode ? (
+        <>
+          <h2 className="payment-result-title">Wystąpił błąd!</h2>
+          <p className="payment-result-text">{getErrorMessage(errorCode)}</p>
+          <Button className="btn-browse" onClick={handleBackToHome}>
+            Powrót do strony głównej
+          </Button>
+        </>
+      ) : (
+        <>
+          <h2 className="payment-result-title">Dziękujemy za płatność!</h2>
+          <p className="payment-result-text">Twoje zamówienie zostało opłacone. Wkrótce je zrealizujemy.</p>
+          <Button className="btn-browse" onClick={handleBackToHome}>
+            Powrót do strony głównej
+          </Button>
+        </>
+      )}
     </div>
   );
 };
