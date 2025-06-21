@@ -10,6 +10,7 @@ interface OrdersListProps {
 const OrdersList: React.FC<OrdersListProps> = ({ products, selectedProducts, updateQuantity }) => {
   return (
     <div className="table-responsive">
+      <h2>Złóż zamówienie</h2>
       <table className="table table-bordered">
         <thead>
           <tr>

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import DashboardTabs from '../../components/DashboardTabs';
 import OrdersList from './ordersList';
 import { ProduktResponse, getAllProducts } from '../Products/indexService';
-import { createOrder } from './OrdersService';
+import { createOrder, ZamowienieResponse, getMyOrders } from './OrdersService';
 import axios from 'axios';
+import MyOrdersList from './MyOrdersList';
 
 interface Dostawca {
   id: number;
@@ -32,6 +33,10 @@ const Orders = () => {
 
   const [selectedDostawcaId, setSelectedDostawcaId] = useState<number | null>(null);
   const [selectedMagazynId, setSelectedMagazynId] = useState<number | null>(null);
+
+  const [myOrders, setMyOrders] = useState<ZamowienieResponse[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState<boolean>(false);
+  const [ordersError, setOrdersError] = useState<string>('');
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -63,6 +68,31 @@ const Orders = () => {
     }
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+  async function fetchUserOrders() {
+    setLoadingOrders(true);
+    setOrdersError('');
+    try {
+      const orders = await getMyOrders();
+      console.log('Pobrane zamówienia:', orders);
+      setMyOrders(orders);
+    } catch (e: any) {
+      console.error('Błąd pobierania zamówień:', e);
+      if (e.response && e.response.status === 401) {
+        setOrdersError('Nie jesteś zalogowany.');
+      } else if (e.response && e.response.status === 404) {
+        setOrdersError('Nie znaleziono zamówień dla Twojego konta.');
+      } else {
+        setOrdersError('Nie udało się pobrać Twoich zamówień.');
+      }
+    } finally {
+      setLoadingOrders(false);
+    }
+  }
+  fetchUserOrders();
+}, []);
+
 
   const updateQuantity = (productId: number, qty: number) => {
     setSelectedProducts(prev => {
@@ -126,6 +156,9 @@ const Orders = () => {
       const createdOrderId = response.id || response.orderId;
       setOrderId(createdOrderId);
 
+      const orders = await getMyOrders();
+      setMyOrders(orders);
+
       if (paymentType === 'CARD') {
         const payResponse = await axios.post(`http://localhost:8080/zamowienie/${createdOrderId}/payu`, {}, { withCredentials: true });
         if (payResponse?.data?.redirectUrl) {
@@ -150,6 +183,15 @@ const Orders = () => {
           <p>Ładowanie danych...</p>
         ) : (
           <>
+          {loadingOrders ? (
+              <p>Ładowanie zamówień...</p>
+            ) : ordersError ? (
+              <p style={{ color: 'red' }}>{ordersError}</p>
+            ) : (
+              <MyOrdersList orders={myOrders} />
+            )}
+
+
             <OrdersList products={products} selectedProducts={selectedProducts} updateQuantity={updateQuantity} />
 
             <div className="form-wrapper">
