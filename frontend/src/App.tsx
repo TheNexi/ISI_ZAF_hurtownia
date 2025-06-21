@@ -11,6 +11,7 @@ import AdminProducts from './admin/pages/Products'
 import { AuthProvider } from './auth/AuthContext'
 import PrivateRoute from './auth/PrivateRoute'
 import './styles/global.css'
+import SuccessPage from './pages/Orders/SuccessPage'
 
 const App = () => {
   return (
@@ -42,6 +43,15 @@ const AppRoutes = () => {
           element={
             <PrivateRoute requiredRole="USER">
               <Profile />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/platnosc/sukces"
+          element={
+            <PrivateRoute requiredRole="USER">
+              <SuccessPage />
             </PrivateRoute>
           }
         />

@@ -82,7 +82,9 @@ const Orders = () => {
     return sum + prod.cena * qty;
   }, 0);
 
-  const handleCreateOrder = async () => {
+  const handleCreateOrder = async (paymentType: 'CASH' | 'CARD') => {
+    setError('');
+
     if (!user || !user.id) {
       setError('Brak danych klienta. Uzupełnij dane w profilu.');
       return;
@@ -121,9 +123,19 @@ const Orders = () => {
       };
 
       const response = await createOrder(orderData);
-      setOrderId(response.id || response.orderId);
+      const createdOrderId = response.id || response.orderId;
+      setOrderId(createdOrderId);
+
+      if (paymentType === 'CARD') {
+        const payResponse = await axios.post(`http://localhost:8080/zamowienie/${createdOrderId}/payu`, {}, { withCredentials: true });
+        if (payResponse?.data?.redirectUrl) {
+          window.location.href = payResponse.data.redirectUrl;
+        } else {
+          setError('Nie udało się uzyskać linku do płatności.');
+        }
+      }
     } catch (err) {
-      setError('Błąd przy składaniu zamówienia');
+      setError('Błąd przy składaniu zamówienia.');
     }
   };
 
@@ -140,42 +152,46 @@ const Orders = () => {
           <>
             <OrdersList products={products} selectedProducts={selectedProducts} updateQuantity={updateQuantity} />
 
-              <div className="form-wrapper">
-                <label className="form-label">Wybierz dostawcę:</label>
-                <select
-                  className="select-input"
-                  value={selectedDostawcaId ?? ''}
-                  onChange={e => setSelectedDostawcaId(Number(e.target.value))}
-                >
-                  {dostawcy.map(d => (
-                    <option key={d.id} value={d.id}>
-                      {d.nazwa}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="form-wrapper">
+              <label className="form-label">Wybierz dostawcę:</label>
+              <select
+                className="select-input"
+                value={selectedDostawcaId ?? ''}
+                onChange={e => setSelectedDostawcaId(Number(e.target.value))}
+              >
+                {dostawcy.map(d => (
+                  <option key={d.id} value={d.id}>
+                    {d.nazwa}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div className="form-wrapper">
-                <label className="form-label">Wybierz magazyn:</label>
-                <select
-                  className="select-input"
-                  value={selectedMagazynId ?? ''}
-                  onChange={e => setSelectedMagazynId(Number(e.target.value))}
-                >
-                  {magazyny.map(m => (
-                    <option key={m.id} value={m.id}>
-                      {m.nazwa}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="form-wrapper">
+              <label className="form-label">Wybierz magazyn:</label>
+              <select
+                className="select-input"
+                value={selectedMagazynId ?? ''}
+                onChange={e => setSelectedMagazynId(Number(e.target.value))}
+              >
+                {magazyny.map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.nazwa}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <h3 className="headernumber3">
               Łączna kwota: {totalPrice.toFixed(2)} zł
             </h3>
 
-            <button onClick={handleCreateOrder} className="btn btn-pay">
+            <button onClick={() => handleCreateOrder('CASH')} className="btn btn-pay">
               Zapłać gotówką
+            </button>
+
+            <button onClick={() => handleCreateOrder('CARD')} className="btn btn-pay">
+              Zapłać kartą
             </button>
 
             {orderId && (

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/zamowienie")
@@ -53,5 +54,12 @@ public class ZamowienieController {
         ZamowienieResponse response = zamowienieService.zatwierdzPlatnoscOffline(id);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/{id}/payu")
+    public ResponseEntity<Map<String, String>> initPayment(@PathVariable Integer id) {
+        String redirectUrl = zamowienieService.inicjalizujPlatnosc(id);
+        return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl));
+    }
+
 
 }

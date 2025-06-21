@@ -138,7 +138,7 @@ const OrderList: React.FC<OrderListProps> = ({ orders, onRefresh, onEdit }) => {
             <button className="btn-action btn-delete">Usuń</button>
           </Popconfirm>
 
-          {record.statusPlatnosci === 'PENDING' && (
+          {(record.statusPlatnosci === 'PENDING' || record.statusPlatnosci === 'FAILED') && (
           <Popconfirm
             title="Zatwierdzić płatność offline?"
             onConfirm={() => handleApprovePayment(record.id)}
